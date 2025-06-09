@@ -15,7 +15,6 @@ type Palette interface {
 
 type paletteImpl struct {
 	src      image.Image
-	buckets  []*Bucket
 	measures []color.Color
 	wg       sync.WaitGroup
 	mu       sync.Mutex
@@ -24,7 +23,6 @@ type paletteImpl struct {
 func New(source image.Image) Palette {
 	plt := &paletteImpl{
 		src:      source,
-		buckets:  make([]*Bucket, 0),
 		measures: make([]color.Color, 0),
 	}
 	return plt
