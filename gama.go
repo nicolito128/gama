@@ -22,8 +22,7 @@ type paletteImpl struct {
 
 func New(source image.Image) Palette {
 	plt := &paletteImpl{
-		src:      source,
-		measures: make([]color.Color, 0),
+		src: source,
 	}
 	return plt
 }
@@ -32,6 +31,7 @@ func (pl *paletteImpl) Quantify(n int) ([]color.Color, error) {
 	if n <= 0 {
 		return nil, errors.New("invalid palette length")
 	}
+	pl.measures = make([]color.Color, 0, n)
 
 	maxParalellism := min(n, runtime.GOMAXPROCS(0), runtime.NumCPU())
 	if maxParalellism <= 0 { // Just in case of something weird, lmao

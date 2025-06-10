@@ -20,14 +20,22 @@ func (b *Bucket) Median() color.Color {
 	if len(b.arr) == 0 {
 		return color.RGBA{}
 	}
+	if len(b.arr) == 1 {
+		return b.arr[0]
+	}
 
-	var reds, greens, blues, alphas []uint32
+	n := len(b.arr)
+	reds := make([]uint8, 0, n)
+	greens := make([]uint8, 0, n)
+	blues := make([]uint8, 0, n)
+	alphas := make([]uint8, 0, n)
+
 	for _, c := range b.arr {
 		r, g, b, a := c.RGBA()
-		reds = append(reds, r)
-		greens = append(greens, g)
-		blues = append(blues, b)
-		alphas = append(alphas, a)
+		reds = append(reds, uint8(r>>8))
+		greens = append(greens, uint8(g>>8))
+		blues = append(blues, uint8(b>>8))
+		alphas = append(alphas, uint8(a>>8))
 	}
 
 	slices.Sort(reds)
@@ -35,32 +43,19 @@ func (b *Bucket) Median() color.Color {
 	slices.Sort(blues)
 	slices.Sort(alphas)
 
-	medianR := getMedian(reds)
-	medianG := getMedian(greens)
-	medianB := getMedian(blues)
-	medianA := getMedian(alphas)
-
-	median := color.RGBA{
-		R: uint8(medianR >> 8),
-		G: uint8(medianG >> 8),
-		B: uint8(medianB >> 8),
-		A: uint8(medianA >> 8),
+	mid := len(b.arr) / 2
+	if len(b.arr)%2 == 1 {
+		return color.RGBA{reds[mid], greens[mid], blues[mid], alphas[mid]}
 	}
 
-	return median
+	return color.RGBA{
+		R: uint8((uint16(reds[mid-1]) + uint16(reds[mid])) / 2),
+		G: uint8((uint16(greens[mid-1]) + uint16(greens[mid])) / 2),
+		B: uint8((uint16(blues[mid-1]) + uint16(blues[mid])) / 2),
+		A: uint8((uint16(alphas[mid-1]) + uint16(alphas[mid])) / 2),
+	}
 }
 
 func (b *Bucket) Push(c color.Color) {
 	b.arr = append(b.arr, c)
-}
-
-func getMedian(s []uint32) uint32 {
-	n := len(s)
-	if n == 0 {
-		return 0
-	}
-	if n%2 == 1 {
-		return s[n/2]
-	}
-	return (s[n/2-1] + s[n/2]) / 2
 }

@@ -52,7 +52,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 
 	pl := gama.New(img)
 
-	colors, err := pl.Quantify(16)
+	colors, err := pl.Quantify(32)
 	if err != nil {
 		fmt.Printf("Error getting the color palette: %v\n", err)
 		return
