@@ -58,9 +58,12 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var h string
 	hexs := make([]string, len(colors))
+
 	for i, c := range colors {
-		hexs[i] = fmt.Sprintf("<div style=\"background: %s; width: 50px; height: 50px; display: inline-block;\"></div>", gama.ColorToHex(c, false))
+		h = gama.ColorToHex(c, false)
+		hexs[i] = fmt.Sprintf("<div id=\"color\" class=\"color\" style=\"background: %s; width: 50px; height: 50px; display: inline-block; font-size: 0; overflow: hidden;\">%s</div>", h, h)
 	}
 
 	w.Header().Set("Content-Type", "text/html")

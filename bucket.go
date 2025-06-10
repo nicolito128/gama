@@ -25,17 +25,17 @@ func (b *Bucket) Median() color.Color {
 	}
 
 	n := len(b.arr)
-	reds := make([]uint8, 0, n)
-	greens := make([]uint8, 0, n)
-	blues := make([]uint8, 0, n)
-	alphas := make([]uint8, 0, n)
+	reds := make([]uint8, n)
+	greens := make([]uint8, n)
+	blues := make([]uint8, n)
+	alphas := make([]uint8, n)
 
-	for _, c := range b.arr {
+	for i, c := range b.arr {
 		r, g, b, a := c.RGBA()
-		reds = append(reds, uint8(r>>8))
-		greens = append(greens, uint8(g>>8))
-		blues = append(blues, uint8(b>>8))
-		alphas = append(alphas, uint8(a>>8))
+		reds[i] = uint8(r >> 8)
+		greens[i] = uint8(g >> 8)
+		blues[i] = uint8(b >> 8)
+		alphas[i] = uint8(a >> 8)
 	}
 
 	slices.Sort(reds)

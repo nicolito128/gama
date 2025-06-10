@@ -29,7 +29,7 @@ func New(source image.Image) Palette {
 
 func (pl *paletteImpl) Quantify(n int) ([]color.Color, error) {
 	if n <= 0 {
-		return nil, errors.New("invalid palette length")
+		return nil, errors.New("palette length must be a non-zero positive value")
 	}
 	pl.measures = make([]color.Color, 0, n)
 
@@ -37,20 +37,24 @@ func (pl *paletteImpl) Quantify(n int) ([]color.Color, error) {
 	if maxParalellism <= 0 { // Just in case of something weird, lmao
 		maxParalellism = 1
 	}
-	quitPool := make(chan struct{}, maxParalellism)
+	semaphore := make(chan struct{}, maxParalellism)
 
 	width := pl.src.Bounds().Dx()
 	height := pl.src.Bounds().Dy()
 	numLines := height / n
 
+	if n > height {
+		return nil, errors.New("palette length must not exceeds the image height")
+	}
+
 	for i := range n {
 		pl.wg.Add(1)
-		quitPool <- struct{}{}
+		semaphore <- struct{}{}
 
 		go func(job int) {
 			defer pl.wg.Done()
 			defer func() {
-				<-quitPool
+				<-semaphore
 			}()
 
 			startY := job * numLines
